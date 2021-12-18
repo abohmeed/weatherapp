@@ -21,7 +21,8 @@ docker-build:
     - docker info
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
-#   script:
+  script:
+      - echo "Hello"
 #     - |
 #       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
 #         tag=""
