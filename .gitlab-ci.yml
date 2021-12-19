@@ -19,12 +19,12 @@
       - docker build -t $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA . 
       - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA  
 deliver:
-  image: alpine/helm:3.7.1
+  image: alpine/helm:latest
   before_script:
     - base64 -d $KUBECONFIG > ~/.kube/config
   script:
-    - dependency build auth
-    - upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD ./auth
+    - helm dependency build auth
+    - helm upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD ./auth
   only:
     - develop
 
