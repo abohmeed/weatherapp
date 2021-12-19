@@ -25,6 +25,7 @@ deliver:
   script:
     - helm dependency build auth
     - helm upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD ./auth
+    - cd auth
   only:
     - develop
 
