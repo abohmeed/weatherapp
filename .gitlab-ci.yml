@@ -24,7 +24,7 @@ deliver:
     - base64 -d $KUBECONFIG > ~/.kube/config
   script:
     - cd auth
-    - helm help
+    # - helm help
 #    - helm dependency build 
 #    - helm upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD .
   only:
