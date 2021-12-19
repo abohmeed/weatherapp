@@ -25,8 +25,9 @@ deliver:
   before_script:
     - apk add py3-pip
     - pip3 install awscli
-    - mkdir /tmp/.kube
-    - base64 -d $KUBECONFIG > /tmp/.kube/config
+    #- mkdir /tmp/.kube
+    #- base64 -d $KUBECONFIG > /tmp/.kube/config
+    - aws eks --region eu-west-2 update-kubeconfig --name gitlab
     - helm repo add bitnami https://charts.bitnami.com/bitnami
   script:
     - cd weatherapp-auth
