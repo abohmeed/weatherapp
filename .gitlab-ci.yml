@@ -20,6 +20,7 @@
       - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA  
 deliver:
   image: alpine/helm:latest
+  entrypoint: [""]
   before_script:
     - base64 -d $KUBECONFIG > ~/.kube/config
   script:
