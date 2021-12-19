@@ -1,4 +1,4 @@
-build:
+.build:
   image: docker:latest
   stage: build
   services:
@@ -19,15 +19,20 @@ build:
       - docker build -t $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA . 
       - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA  
 deliver:
-  environment: staging
-  image: helm:3.7.1
+  image: 
+    name: alpine/helm:latest
+    entrypoint: [""]
   before_script:
-    - cd auth
-    - helm dependency build 
-    - cd ..
+    - apk add py3-pip
+    - pip3 install awscli
+    - aws configure set region "eu-west-2"
+    - mkdir /tmp/.kube
+    - echo $KUBECONFIG | base64 -d > /tmp/.kube/config
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
   script:
-    - cd auth
-    - helm upgrade -n staging --kubeconfig $kubeconfig  --install weatherapp-auth --set mysql.auth.rootPassword=$DB_PASSWORD .
+    - cd weatherapp-auth
+    - helm dependency build .
+    - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORD .
   only:
     - develop
 
