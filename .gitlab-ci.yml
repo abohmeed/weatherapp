@@ -23,6 +23,8 @@ deliver:
     name: alpine/helm:latest
     entrypoint: [""]
   before_script:
+    - apk add py3-pip
+    - pip3 install awscli
     - mkdir /tmp/.kube
     - base64 -d $KUBECONFIG > /tmp/.kube/config
     - helm repo add bitnami https://charts.bitnami.com/bitnami
