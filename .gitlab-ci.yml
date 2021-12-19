@@ -23,13 +23,13 @@ deliver:
     name: alpine/helm:latest
     entrypoint: [""]
   before_script:
-    - mkdir -p ~/.kube
-    - base64 -d $KUBECONFIG > ~/.kube/config
+    - mkdir /tmp/.kube
+    - base64 -d $KUBECONFIG > /tmp/.kube/config
     - helm repo add bitnami https://charts.bitnami.com/bitnami
   script:
     - cd weatherapp-auth
     - helm dependency build .
-    - helm upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD .
+    - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORD .
   only:
     - develop
 
