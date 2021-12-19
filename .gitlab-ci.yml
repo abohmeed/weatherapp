@@ -23,6 +23,7 @@ deliver:
     name: alpine/helm:latest
     entrypoint: [""]
   before_script:
+    - mkdir -p ~/.kube
     - base64 -d $KUBECONFIG > ~/.kube/config
   script:
     - helm dependency build auth
