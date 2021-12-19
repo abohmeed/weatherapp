@@ -32,7 +32,7 @@ deliver:
   script:
     - cd weatherapp-auth
     - helm dependency build .
-    - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORDi --set appVersion=$CI_COMMIT_SHORT_SHA .
+    - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set appVersion=$CI_COMMIT_SHORT_SHA .
     - cd ../weatherapp-ui
     - helm upgrade --install weatherapp-ui .
     - cd ../weatherapp-weather
