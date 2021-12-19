@@ -34,9 +34,9 @@ deliver:
     - helm dependency build .
     - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set appVersion=$CI_COMMIT_SHORT_SHA .
     - cd ../weatherapp-ui
-    - helm upgrade --install weatherapp-ui .
+    - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-ui -n staging --set image.tag=$CI_COMMIT_SHORT_SHA .
     - cd ../weatherapp-weather
-    - helm upgrade --install weatherapp-weather --set apikey=$API_KEY .
+    - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY .
   only:
     - develop
 
