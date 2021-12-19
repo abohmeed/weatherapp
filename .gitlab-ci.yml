@@ -25,6 +25,7 @@ deliver:
   before_script:
     - mkdir -p ~/.kube
     - base64 -d $KUBECONFIG > ~/.kube/config
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
   script:
     - cd weatherapp-auth
     - helm dependency build .
