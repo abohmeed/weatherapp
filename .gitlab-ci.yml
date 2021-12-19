@@ -60,7 +60,6 @@ deploy:
     - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-ui -n staging --set image.tag=$CI_COMMIT_SHORT_SHA .
     - cd ../weatherapp-weather
     - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_SHORT_SHA .
-  rules:
-    - if: '$CI_COMMIT_SHORT_SHA != "" && $CI_COMMIT_REF_NAME == "main"'
-      when: manual
-
+  only:
+    - main
+  when: manual
