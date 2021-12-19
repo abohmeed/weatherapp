@@ -1,3 +1,5 @@
+stages:
+  - deliver
 build:
   image: docker:latest
   stage: build
@@ -22,12 +24,11 @@ deliver:
   environment: staging
   image: alpine/helm:3.7.1
   before_script:
-    - cd auth
-    - helm dependency build 
-    - cd ..
+    - base64 -d $KUBECONFIG > ~/.kube/config
   script:
     - cd auth
-    - helm upgrade -n staging --kubeconfig $kubeconfig  --install weatherapp-auth --set mysql.auth.rootPassword=$DB_PASSWORD .
+    - helm dependency build 
+    - helm upgrade -n staging --install weatherapp-auth --set mysql.auth.rootPassword=$DB_PASSWORD .
   only:
     - develop
 
