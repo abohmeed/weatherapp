@@ -52,7 +52,7 @@ deploy:
     - mkdir /tmp/.kube
     - echo $KUBECONFIG | base64 -d > /tmp/.kube/config
     - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - export COMMIT_HASH=`git log -2 --pretty=%h | tail -1`
+    - export COMMIT_HASH=`git log -2 --pretty=%H | tail -1 | head -c 8`
   script:
     - cd weatherapp-auth
     - helm dependency build .
