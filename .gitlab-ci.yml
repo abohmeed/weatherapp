@@ -41,4 +41,26 @@ deliver:
     - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_SHORT_SHA .
   only:
     - develop
-
+deploy:
+  image: 
+    name: alpine/helm:latest
+    entrypoint: [""]
+  before_script:
+    - apk add py3-pip
+    - pip3 install awscli
+    - aws configure set region "eu-west-2"
+    - mkdir /tmp/.kube
+    - echo $KUBECONFIG | base64 -d > /tmp/.kube/config
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - export COMMIT_HASH=`git log -1 --pretty=%h`
+  script:
+    - cd weatherapp-auth
+    - helm dependency build .
+    - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config --set mysql.auth.rootPassword=$DB_PASSWORD --set image.tag=$COMMIT_HASH .
+    - cd ../weatherapp-ui
+    - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-ui --set image.tag=$COMMIT_HASH .
+    - cd ../weatherapp-weather
+    - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-weather --set apikey=$API_KEY --set image.tag=$COMMIT_HASH .
+  only:
+    - main
+  when: manual
