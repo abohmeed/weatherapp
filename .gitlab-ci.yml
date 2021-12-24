@@ -48,7 +48,6 @@ deliver:
     - mkdir /tmp/.kube
     - echo $KUBECONFIG | base64 -d > /tmp/.kube/config
     - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" 
   script:
     - cd weatherapp-auth
     - helm dependency build .
