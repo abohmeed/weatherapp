@@ -53,7 +53,7 @@ deliver:
     - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_SHORT_SHA .
   only: 
     - develop
-    - [tags]
+    -  /^dev_.*$/
 deploy:
   image: 
     name: alpine/helm:latest
@@ -74,6 +74,6 @@ deploy:
     - cd ../weatherapp-weather
     - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_TAG .
   only: 
-    - [tags]
     - main
+    -  /^release_.*$/
   when: manual
