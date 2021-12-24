@@ -1,3 +1,8 @@
+stages:
+  - build
+  - promote
+  - deliver
+  - deploy
 build:
   image: docker:latest
   stage: build
@@ -21,6 +26,7 @@ build:
   only:
     - develop
 promote:
+  stage: promote
   services:
     - docker:dind
   image: docker:latest
@@ -42,6 +48,7 @@ promote:
   rules:
     - if: '$CI_COMMIT_TAG'
 deliver:
+  stage: deliver
   image: 
     name: alpine/helm:latest
     entrypoint: [""]
@@ -61,8 +68,9 @@ deliver:
     - cd ../weatherapp-weather
     - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_TAG .
   rules: 
-    - if: "$CI_COMMIT_BRANCH == 'develop' && $CI_COMMIT_TAG != null"
+    - if: '$CI_COMMIT_BRANCH == "develop" && $CI_COMMIT_TAG'
 deploy:
+  stage: deploy
   image: 
     name: alpine/helm:latest
     entrypoint: [""]
@@ -82,5 +90,5 @@ deploy:
     - cd ../weatherapp-weather
     - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_TAG .
   rules: 
-    - if: "$CI_COMMIT_BRANCH == 'main' && $CI_COMMIT_TAG != null"
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
       when: manual
