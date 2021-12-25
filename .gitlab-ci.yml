@@ -18,6 +18,8 @@ build:
     - docker build -t $CI_REGISTRY_USER/weatherapp-ui . 
     - cd ../weather
     - docker build -t $CI_REGISTRY_USER/weatherapp-weather . 
+  except:
+    - main
 push:
   image: docker:latest
   stage: push
