@@ -12,26 +12,26 @@ build:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" 
   script:
-      - echo "Building the auth microservice"
-      - cd auth
-      - docker build -t $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHORT_SHA . --no-cache
-      - echo "Building the UI microservice"
-      - cd ../UI
-      - docker build -t $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHORT_SHA . 
-      - echo "Building the weather microservice"
-      - cd ../weather
-      - docker build -t $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA . 
+    - cd auth
+    - docker build -t $CI_REGISTRY_USER/weatherapp-auth . --no-cache
+    - cd ../UI
+    - docker build -t $CI_REGISTRY_USER/weatherapp-ui . 
+    - cd ../weather
+    - docker build -t $CI_REGISTRY_USER/weatherapp-weather . 
 push:
   image: docker:latest
   stage: push
   services:
     - docker:dind
   script:
-    - echo "Pushing the auth microservice"
+    - cd auth
+    - docker build -t $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHORT_SHA . --no-cache
     - docker push $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHORT_SHA
-    - echo "Pushing the UI microservice"
+    - cd ../UI
+    - docker build -t $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHORT_SHA . 
     - docker push $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHORT_SHA
-    - echo "Pushing the weather microservice"
+    - cd ../weather
+    - docker build -t $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA . 
     - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA  
   only:
     - main
