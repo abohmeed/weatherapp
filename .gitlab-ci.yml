@@ -23,6 +23,7 @@ build:
       - docker build -t $CI_REGISTRY_USER/weatherapp-weather . 
 push:
   image: docker:latest
+  stage: push
   services:
     - docker:dind
   script:
