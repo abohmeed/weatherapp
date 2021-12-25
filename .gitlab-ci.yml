@@ -14,13 +14,13 @@ build:
   script:
       - echo "Building the auth microservice"
       - cd auth
-      - docker build -t $CI_REGISTRY_USER/weatherapp-auth . --no-cache
+      - docker build -t $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHORT_SHA . --no-cache
       - echo "Building the UI microservice"
       - cd ../UI
-      - docker build -t $CI_REGISTRY_USER/weatherapp-ui . 
+      - docker build -t $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHORT_SHA . 
       - echo "Building the weather microservice"
       - cd ../weather
-      - docker build -t $CI_REGISTRY_USER/weatherapp-weather . 
+      - docker build -t $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA . 
 push:
   image: docker:latest
   stage: push
@@ -33,6 +33,8 @@ push:
     - docker push $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHORT_SHA
     - echo "Pushing the weather microservice"
     - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA  
+  only:
+    - main
 deliver:
   stage: deliver
   image: 
@@ -53,6 +55,8 @@ deliver:
     - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-ui -n staging --set image.tag=$CI_COMMIT_SHORT_SHA .
     - cd ../weatherapp-weather
     - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_SHORT_SHA .
+  only:
+    - main
 
 promote:
   stage: promote
