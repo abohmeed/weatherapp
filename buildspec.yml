@@ -1,10 +1,6 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      docker: 19
-
   pre_build:
     commands:
       - curl -s https://get.helm.sh/helm-v3.7.2-linux-amd64.tar.gz  | tar xzf - linux-amd64/helm  --strip-components 1 && sudo mv helm /usr/local/bin
