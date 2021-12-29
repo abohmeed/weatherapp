@@ -9,6 +9,7 @@ phases:
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME 
   build:
     commands:
+      - cd auth
       - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
       - docker push $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
   post_build:
@@ -16,4 +17,4 @@ phases:
       - cd weatherapp-auth
       - helm repo add bitnami https://charts.bitnami.com/bitnami
       - helm dependency build .
-      - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set image.tag=$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - helm upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set image.tag=$CODEBUILD_RESOLVED_SOURCE_VERSION .
