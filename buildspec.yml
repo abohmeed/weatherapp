@@ -6,7 +6,6 @@ phases:
       - curl -s https://get.helm.sh/helm-v3.7.2-linux-amd64.tar.gz  | tar xzf - linux-amd64/helm  --strip-components 1 && mv helm /usr/local/bin
       - curl -sL "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $IMAGE_REPO_NAME
-      - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME 
   build:
     commands:
       - cd auth
@@ -15,7 +14,8 @@ phases:
       - cd ..
   post_build:
     commands:
+      - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME 
       - cd weatherapp-auth
       - helm repo add bitnami https://charts.bitnami.com/bitnami
       - helm dependency build .
-      - helm upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set image.tag=$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - helm upgrade --install weatherapp-auth -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set image.tag=$IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION .
