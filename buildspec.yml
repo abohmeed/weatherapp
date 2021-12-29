@@ -10,8 +10,8 @@ phases:
   build:
     commands:
       - cd auth
-      - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - docker push $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker build -t $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - docker push $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION
   post_build:
     commands:
       - cd weatherapp-auth
