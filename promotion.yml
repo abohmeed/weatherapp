@@ -1,6 +1,9 @@
 version: 0.2
 ### This buildspec is for the promotion pipeline
 phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $IMAGE_REPO_NAME
   build:
     commands:
       - echo "Promoting Docker images"
