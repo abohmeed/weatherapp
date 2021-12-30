@@ -17,6 +17,8 @@ phases:
       - cd ..
   post_build:
     commands:
+      - echo $CODEBUILD_SOURCE_VERSION
+      - if [[ $CODEBUILD_SOURCE_VERSION -eq "main" ]]; then
       - docker push $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker push $IMAGE_REPO_NAME/weatherapp-ui:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker push $IMAGE_REPO_NAME/weatherapp-weather:$CODEBUILD_RESOLVED_SOURCE_VERSION
@@ -30,3 +32,4 @@ phases:
       - cd ../weatherapp-weather
       - helm upgrade --install weatherapp-weather -n staging --set apikey=$API_KEY --set image.repository=$IMAGE_REPO_NAME/weatherapp-weather --set image.tag=$CODEBUILD_RESOLVED_SOURCE_VERSION .
       - echo "Promoting Docker images"
+      - fi
