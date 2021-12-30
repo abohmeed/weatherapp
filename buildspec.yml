@@ -29,4 +29,4 @@ phases:
       - helm upgrade --install weatherapp-ui -n staging --set image.repository=$IMAGE_REPO_NAME/weatherapp-ui --set image.tag=$CODEBUILD_RESOLVED_SOURCE_VERSION .
       - cd ../weatherapp-weather
       - helm upgrade --install weatherapp-weather -n staging --set apikey=$API_KEY --set image.repository=$IMAGE_REPO_NAME/weatherapp-weather --set image.tag=$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - echo "Promoting images"
+      - echo "Promoting Docker images"
