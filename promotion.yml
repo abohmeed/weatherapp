@@ -10,9 +10,9 @@ phases:
       - docker pull $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_ID
       - docker pull $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_ID
       - docker pull $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_ID
-      - docker tag $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_ID
-      - docker tag $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_ID
-      - docker tag $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_ID
+      - docker tag $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_ID $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_TAG
+      - docker tag $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_ID $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_TAG
+      - docker tag $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_ID $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_TAG
       - docker push $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_TAG
       - docker push $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_TAG
       - docker push $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_TAG    
