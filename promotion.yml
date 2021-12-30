@@ -7,12 +7,12 @@ phases:
   build:
     commands:
       - echo "Promoting Docker images"
-      - docker pull $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_ID
-      - docker pull $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_ID
-      - docker pull $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_ID
-      - docker tag $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_ID $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_TAG
-      - docker tag $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_ID $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_TAG
-      - docker tag $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_ID $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_TAG
+      - docker pull $IMAGE_REPO_NAME/weatherapp-ui:$CODEBUILD_RESOLVED_SOURCE_VERSION 
+      - docker pull $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION 
+      - docker pull $IMAGE_REPO_NAME/weatherapp-weather:$CODEBUILD_RESOLVED_SOURCE_VERSION 
+      - docker tag $IMAGE_REPO_NAME/weatherapp-ui:$CODEBUILD_RESOLVED_SOURCE_VERSION  $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_TAG
+      - docker tag $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION  $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_TAG
+      - docker tag $IMAGE_REPO_NAME/weatherapp-weather:$CODEBUILD_RESOLVED_SOURCE_VERSION  $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_TAG
       - docker push $IMAGE_REPO_NAME/weatherapp-ui:$CI_COMMIT_TAG
       - docker push $IMAGE_REPO_NAME/weatherapp-auth:$CI_COMMIT_TAG
       - docker push $IMAGE_REPO_NAME/weatherapp-weather:$CI_COMMIT_TAG    
