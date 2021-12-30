@@ -10,16 +10,16 @@ phases:
     commands:
       - cd auth
       - docker build -t $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - docker push $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - cd ../UI
       - docker build -t $IMAGE_REPO_NAME/weatherapp-ui:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - docker push $IMAGE_REPO_NAME/weatherapp-ui:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - cd ../weather
       - docker build -t $IMAGE_REPO_NAME/weatherapp-weather:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - docker push $IMAGE_REPO_NAME/weatherapp-weather:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - cd ..
   post_build:
     commands:
+      - docker push $IMAGE_REPO_NAME/weatherapp-auth:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker push $IMAGE_REPO_NAME/weatherapp-ui:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker push $IMAGE_REPO_NAME/weatherapp-weather:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME 
       - cd weatherapp-auth
       - helm repo add bitnami https://charts.bitnami.com/bitnami
