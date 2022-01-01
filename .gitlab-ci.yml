@@ -10,15 +10,15 @@ build:
   services:
     - docker:dind
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" 
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
   script:
     - cd auth
     - docker build -t $CI_REGISTRY_USER/weatherapp-auth . --no-cache
     - cd ../UI
-    - docker build -t $CI_REGISTRY_USER/weatherapp-ui . 
+    - docker build -t $CI_REGISTRY_USER/weatherapp-ui .
     - cd ../weather
-    - docker build -t $CI_REGISTRY_USER/weatherapp-weather . 
-  rules: 
+    - docker build -t $CI_REGISTRY_USER/weatherapp-weather .
+  rules:
     - if: '$CI_COMMIT_TAG == null'
 push:
   image: docker:latest
@@ -26,42 +26,41 @@ push:
   services:
     - docker:dind
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" 
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
   script:
     - cd auth
-    - docker build -t $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHORT_SHA . --no-cache
-    - docker push $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHORT_SHA
+    - docker build -t $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHA . --no-cache
+    - docker push $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_SHA
     - cd ../UI
-    - docker build -t $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHORT_SHA . 
-    - docker push $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHORT_SHA
+    - docker build -t $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_SHA
     - cd ../weather
-    - docker build -t $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA . 
-    - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHORT_SHA  
+    - docker build -t $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_SHA
   only:
     - main
 deliver:
   stage: deliver
-  image: 
+  image:
     name: alpine/helm:latest
     entrypoint: [""]
   before_script:
     - apk add py3-pip
     - pip3 install awscli
-    - aws configure set region "eu-west-2"
+    - aws configure set region "eu-west-1"
     - mkdir /tmp/.kube
-    - echo $KUBECONFIG | base64 -d > /tmp/.kube/config
+    - echo $K8SCONFIG | base64 -d > /tmp/.kube/config
     - helm repo add bitnami https://charts.bitnami.com/bitnami
   script:
     - cd weatherapp-auth
     - helm dependency build .
-    - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set image.tag=$CI_COMMIT_SHORT_SHA .
+    - helm upgrade --install weatherapp-auth --kubeconfig /tmp/.kube/config -n staging --set mysql.auth.rootPassword=$DB_PASSWORD --set image.tag=$CI_COMMIT_SHA .
     - cd ../weatherapp-ui
-    - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-ui -n staging --set image.tag=$CI_COMMIT_SHORT_SHA .
+    - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-ui --set image.tag=$CI_COMMIT_SHA .
     - cd ../weatherapp-weather
-    - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_SHORT_SHA .
+    - helm upgrade --install --kubeconfig /tmp/.kube/config -n staging weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_SHA .
   only:
     - main
-
 promote:
   stage: promote
   services:
@@ -69,32 +68,32 @@ promote:
   image: docker:latest
   before_script:
     - apk add git
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" 
-    - TAGGED_HASH=`git rev-list -n 1 $CI_COMMIT_TAG | head -c 8`
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+    - TAGGED_HASH=`git rev-list -n 1 $CI_COMMIT_TAG`
   script:
     - echo "Promoting Docker images"
-    - docker pull $CI_REGISTRY_USER/weatherapp-ui:$TAGGED_HASH
     - docker pull $CI_REGISTRY_USER/weatherapp-auth:$TAGGED_HASH
+    - docker pull $CI_REGISTRY_USER/weatherapp-ui:$TAGGED_HASH
     - docker pull $CI_REGISTRY_USER/weatherapp-weather:$TAGGED_HASH
-    - docker tag $CI_REGISTRY_USER/weatherapp-ui:$TAGGED_HASH $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_TAG
     - docker tag $CI_REGISTRY_USER/weatherapp-auth:$TAGGED_HASH $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_TAG
+    - docker tag $CI_REGISTRY_USER/weatherapp-ui:$TAGGED_HASH $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_TAG
     - docker tag $CI_REGISTRY_USER/weatherapp-weather:$TAGGED_HASH $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_TAG
-    - docker push $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_TAG
     - docker push $CI_REGISTRY_USER/weatherapp-auth:$CI_COMMIT_TAG
+    - docker push $CI_REGISTRY_USER/weatherapp-ui:$CI_COMMIT_TAG
     - docker push $CI_REGISTRY_USER/weatherapp-weather:$CI_COMMIT_TAG
   rules:
     - if: '$CI_COMMIT_TAG'
 deploy:
   stage: deploy
-  image: 
+  image:
     name: alpine/helm:latest
     entrypoint: [""]
   before_script:
     - apk add py3-pip
     - pip3 install awscli
-    - aws configure set region "eu-west-2"
+    - aws configure set region "eu-west-1"
     - mkdir /tmp/.kube
-    - echo $KUBECONFIG | base64 -d > /tmp/.kube/config
+    - echo $K8SCONFIG | base64 -d > /tmp/.kube/config
     - helm repo add bitnami https://charts.bitnami.com/bitnami
   script:
     - cd weatherapp-auth
@@ -104,6 +103,6 @@ deploy:
     - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-ui --set image.tag=$CI_COMMIT_TAG .
     - cd ../weatherapp-weather
     - helm upgrade --install --kubeconfig /tmp/.kube/config weatherapp-weather --set apikey=$API_KEY --set image.tag=$CI_COMMIT_TAG .
-  rules: 
+  rules:
     - if: '$CI_COMMIT_TAG'
       when: manual
